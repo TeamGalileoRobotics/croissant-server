@@ -1,1 +1,1 @@
-# croissant-server
+# croissant-server 🥐
