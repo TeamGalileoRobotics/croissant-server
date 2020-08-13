@@ -8,18 +8,20 @@ import socket
 
 async def send(websocket, path):
     async for _ in websocket:
+        print("sending data")
         await websocket.send(json.dumps(data))
 
 async def receive(reader, writer):
-    message = await reader.read(1024)
-    peer = writer.get_extra_info("peername")
-    data[peer] = struct.unpack("3f", message)
-    writer.close()
+    peer = writer.get_extra_info("peername")[0]
+    while not reader.at_eof():
+        message = await reader.read(12)
+        print(str(message) + " from " + str(peer))
+        data[peer] = struct.unpack("3f", message)
 
 data = {}
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(websockets.serve(send, config.HOST, config.RECEIVE_PORT))
+loop.run_until_complete(websockets.serve(send, config.HOST, config.SEND_PORT))
 receiver = asyncio.start_server(receive, config.HOST, config.RECEIVE_PORT, loop=loop)
 loop.run_until_complete(receiver)
 loop.run_forever()
