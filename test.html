@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+</head>
+<body>
+	<script type="text/javascript">
+		const ws = new WebSocket("ws://localhost:1337");
+		ws.onmessage = msg => console.log(msg);
+		ws.onopen = () => ws.send("hallo");
+	</script>
+</body>
+</html>
