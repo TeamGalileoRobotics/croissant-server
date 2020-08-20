@@ -23,9 +23,14 @@ async def receive(reader, writer):
 data = {}
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(websockets.serve(send, config.HOST, config.SEND_PORT))
-receiver = asyncio.start_server(receive, config.HOST, config.RECEIVE_PORT, loop=loop)
-loop.run_until_complete(receiver)
-loop.run_forever()
 
-# TODO: Exit gracefully
+try:
+    loop.run_until_complete(websockets.serve(send, config.HOST, config.SEND_PORT))
+    loop.run_until_complete(asyncio.start_server(receive, config.HOST, config.RECEIVE_PORT, loop=loop))
+    loop.run_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    print("Exiting...")
+    loop.close()
+    # TODO: Stop tasks
