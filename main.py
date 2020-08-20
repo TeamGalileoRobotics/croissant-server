@@ -3,7 +3,6 @@ import config
 import json
 import struct
 import websockets
-import socket
 
 
 async def send(websocket, path):
@@ -11,12 +10,14 @@ async def send(websocket, path):
         print("sending data")
         await websocket.send(json.dumps(data))
 
+
 async def receive(reader, writer):
     peer = writer.get_extra_info("peername")[0]
     while not reader.at_eof():
         message = await reader.read(12)
         print(str(message) + " from " + str(peer))
         data[peer] = struct.unpack("3f", message)
+
 
 data = {}
 
