@@ -5,10 +5,11 @@ import struct
 import websockets
 
 
-async def send(websocket, path):
-    async for _ in websocket:
-        print("sending data")
-        await websocket.send(json.dumps(data))
+async def send(websocket, _):
+    async for message in websocket:
+        if message == "get":
+            print("Sending data")
+            await websocket.send(json.dumps(data))
 
 
 async def receive(reader, writer):
