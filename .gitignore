@@ -130,3 +130,5 @@ dmypy.json
 
 # secret config file
 config.py
+
+.idea
