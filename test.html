@@ -9,7 +9,7 @@
 	<script type="text/javascript">
 		const ws = new WebSocket("ws://localhost:1337");
 		ws.onmessage = msg => document.getElementById("data").innerText = msg.data;
-		ws.onopen = () => setInterval(() => ws.send("hallo"), 100);
+		ws.onopen = () => setInterval(() => ws.send("get"), 100);
 	</script>
 </body>
 </html>
