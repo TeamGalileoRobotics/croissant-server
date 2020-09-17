@@ -7,7 +7,7 @@
 <body>
 	<p id="data"></p>
 	<script type="text/javascript">
-		const ws = new WebSocket("ws://localhost:1337");
+		const ws = new WebSocket("ws://localhost:1338");
 		ws.onmessage = msg => document.getElementById("data").innerText = msg.data;
 		ws.onopen = () => setInterval(() => ws.send("get"), 100);
 	</script>
