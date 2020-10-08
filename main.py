@@ -5,32 +5,44 @@ import struct
 import websockets
 
 
+class Receiver:
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, message, addr):
+        ip = addr[0]
+        print(str(message) + " from " + str(ip))
+        data[ip] = struct.unpack("3f", message)
+
+
 async def send(websocket, _):
     async for message in websocket:
         if message == "get":
             print("Sending data")
             await websocket.send(json.dumps(data))
 
-
-async def receive(reader, writer):
-    peer = writer.get_extra_info("peername")[0]
-    while not reader.at_eof():
-        message = await reader.read(12)
-        print(str(message) + " from " + str(peer))
-        data[peer] = struct.unpack("3f", message)
-
-
 data = {}
 
-loop = asyncio.get_event_loop()
 
-try:
-    loop.run_until_complete(websockets.serve(send, config.HOST, config.SEND_PORT))
-    loop.run_until_complete(asyncio.start_server(receive, config.HOST, config.RECEIVE_PORT, loop=loop))
+# try:
+def main():
+    loop = asyncio.get_event_loop()
+    
+    udpsock = loop.create_datagram_endpoint(
+        lambda: Receiver(),
+        local_addr=(config.HOST, config.RECEIVE_PORT))
+    loop.run_until_complete(udpsock)
+    loop.run_until_complete(websockets.serve(
+        send, config.HOST, config.SEND_PORT))
     loop.run_forever()
-except KeyboardInterrupt:
-    pass
-finally:
-    print("Exiting...")
-    loop.close()
-    # TODO: Stop tasks
+
+asyncio.run(main())
+# start_send()
+# except KeyboardInterrupt:
+#    pass
+# finally:
+#    print("Exiting...")
+#    transport.close()
+#    event_loop.close()
+#    running_loop.close()
+# TODO: Stop tasks
