@@ -3,6 +3,9 @@ import config
 import json
 import struct
 import websockets
+import time
+
+last = time.time()
 
 
 class Receiver:
@@ -10,8 +13,11 @@ class Receiver:
         self.transport = transport
 
     def datagram_received(self, message, addr):
+        global last
+
         ip = addr[0]
-        print(str(message) + " from " + str(ip))
+        print(f"Message from {ip}, time {(time.time() - last)*1000:.2f}ms")
+        last = time.time()
         data[ip] = struct.unpack("3f", message)
 
 
@@ -27,7 +33,7 @@ data = {}
 # try:
 def main():
     loop = asyncio.get_event_loop()
-    
+
     udpsock = loop.create_datagram_endpoint(
         lambda: Receiver(),
         local_addr=(config.HOST, config.RECEIVE_PORT))
@@ -36,13 +42,5 @@ def main():
         send, config.HOST, config.SEND_PORT))
     loop.run_forever()
 
+
 asyncio.run(main())
-# start_send()
-# except KeyboardInterrupt:
-#    pass
-# finally:
-#    print("Exiting...")
-#    transport.close()
-#    event_loop.close()
-#    running_loop.close()
-# TODO: Stop tasks
