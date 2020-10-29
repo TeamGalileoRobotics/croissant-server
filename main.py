@@ -16,7 +16,7 @@ class Receiver:
         global last
 
         ip = addr[0]
-        print(f"Message from {ip}, time {(time.time() - last)*1000:.2f}ms")
+        print(f"Message from {ip}, time since last {(time.time() - last)*1000:.2f}ms")
         last = time.time()
         data[ip] = struct.unpack("3f", message)
 
