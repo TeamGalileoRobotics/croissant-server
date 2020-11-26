@@ -25,7 +25,7 @@ async def send(websocket, _):
     async for message in websocket:
         if message == "get":
             print("Sending data")
-            await websocket.send(json.dumps(data))
+            await websocket.send(json.dumps(data, sort_keys=True))
 
 data = {}
 
