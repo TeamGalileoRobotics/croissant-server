@@ -2,13 +2,14 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>server data</title>
+	<title>🥐 server data</title>
 </head>
 <body>
-	<p id="data"></p>
+	<h1>🥐 server data</h1>
+	<pre id="data"></pre>
 	<script type="text/javascript">
 		const ws = new WebSocket("ws://localhost:1338");
-		ws.onmessage = msg => document.getElementById("data").innerText = msg.data;
+		ws.onmessage = msg => document.getElementById("data").innerText = JSON.stringify(JSON.parse(msg.data), null, 2);
 		ws.onopen = () => setInterval(() => ws.send("get"), 100);
 	</script>
 </body>
