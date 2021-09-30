@@ -13,3 +13,4 @@ python_version = "3.9"
 
 [scripts]
 server = "python3 main.py"
+mock_server = "python3 mock_server.py"
