@@ -8,10 +8,10 @@
     
     `> python3 -m pip install pipenv`
 
-2. Install packages from `Pipfile`:
+2. Install packages from Pipfile:
     
     `> python3 -m pipenv install`
 
-3. Start server:
+3. Start server with script defined in Pipfile:
 
     `> python3 -m pipenv run server`
