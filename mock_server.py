@@ -7,14 +7,12 @@ import config
 
 async def echo(websocket, _):
     async for message in websocket:
+        print(message)
         if message == "get":
-            print("Sending data")
             await websocket.send(json.dumps(data, sort_keys=True))
         else:
             values = message.split(" ")
-            id = values[0]
-            print(f"Message from {id}")
-            data[id] = values[1:]
+            data[values[0]] = values[1:]
 
 data = {}
 
