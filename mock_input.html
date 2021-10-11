@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>🥐 mock input</title>
+	<style>
+		.node {
+			display: inline-block;
+			padding: 1rem;
+		}
+
+		.node input {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<h1>🥐 mock input</h1>
+	<button onclick="addNode()">add node</button>
+	<br>
+	<script type="text/javascript">
+		const addNode = () => {
+			const div = document.createElement("div");
+			div.id = `node${document.getElementsByClassName("node").length}`;
+			div.className = "node";
+			
+			const title = document.createElement("span");
+			title.innerText = div.id;
+			div.appendChild(title);
+
+			for (let i = 0; i < 3; i++) {
+				const input = document.createElement("input");
+				input.type = "range";
+				input.min = 0;
+				input.max = 20;
+				input.value = 0;
+				input.step = 0.1;
+				div.appendChild(input);
+			}
+
+			const button = document.createElement("button");
+			button.innerText = "remove";
+			button.onclick = () => document.body.removeChild(div);
+			div.appendChild(button);
+
+			document.body.appendChild(div);
+		};
+
+		const ws = new WebSocket("ws://localhost:1338");
+		ws.onopen = () => setInterval(() => {
+			for (let node of document.getElementsByClassName("node")) {
+				const id = node.id;
+				const values = Array.from(document.querySelectorAll(`#${id} input`)).map(i => i.value);
+				ws.send(`${id} ${values.join(" ")}`);
+			}
+		}, 100);
+	</script>
+</body>
+</html>

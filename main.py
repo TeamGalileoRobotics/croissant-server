@@ -1,9 +1,10 @@
 import asyncio
-import config
 import json
 import struct
 import websockets
 import time
+
+import config
 
 last = time.time()
 
@@ -30,7 +31,6 @@ async def send(websocket, _):
 data = {}
 
 
-# try:
 def main():
     loop = asyncio.get_event_loop()
 
