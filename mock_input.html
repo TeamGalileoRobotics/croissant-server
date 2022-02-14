@@ -12,48 +12,93 @@
 		.node input {
 			display: block;
 		}
+
+		.node canvas {
+			display: block;
+			border: 1px solid black;
+		}
 	</style>
 </head>
 <body>
 	<h1>🥐 mock input</h1>
 	<button onclick="addNode()">add node</button>
+	<button onclick="removeNode()">remove node</button>
 	<br>
 	<script type="text/javascript">
+		const range = 20;
+		const data = {};
+
 		const addNode = () => {
+			const id = `node${document.getElementsByClassName("node").length}`;
+			data[id] = [0, 0, 0];
+
 			const div = document.createElement("div");
-			div.id = `node${document.getElementsByClassName("node").length}`;
+			div.id = id;
 			div.className = "node";
 			
 			const title = document.createElement("span");
 			title.innerText = div.id;
 			div.appendChild(title);
 
-			for (let i = 0; i < 3; i++) {
-				const input = document.createElement("input");
-				input.type = "range";
-				input.max = 20;
-				input.min = -input.max;
-				input.value = 0;
-				input.step = 0.1;
-				div.appendChild(input);
-			}
+			const canvas = document.createElement("canvas");
+			canvas.width = canvas.height = range * 10;
+			const ctx = canvas.getContext("2d");
+			const draw = () => {
+				ctx.fillStyle = "black";
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.save();
+				ctx.scale(canvas.width / (2 * range), canvas.height / (2 * range));
+				ctx.translate(range, range);
+				ctx.beginPath();
+				ctx.arc(data[id][0], data[id][1], 1, 0, 2 * Math.PI);
+				ctx.fill();
+				ctx.restore();
+			};
+			canvas.addEventListener("mousemove", (e) => {
+				if (e.buttons === 0) {
+					canvas.style.cursor = "grab";
+					return;
+				} else {
+					canvas.style.cursor = "grabbing";
+				}
 
-			const button = document.createElement("button");
-			button.innerText = "remove";
-			button.onclick = () => document.body.removeChild(div);
-			div.appendChild(button);
+				data[id][0] += e.movementX * 2 * range / canvas.width;
+				data[id][1] += e.movementY * 2 * range / canvas.height;
+				draw();
+			});
+			draw();
+			div.appendChild(canvas);
+
+			const input = document.createElement("input");
+			input.type = "range";
+			input.max = range;
+			input.min = -input.max;
+			input.value = 0;
+			input.step = 0.1;
+			input.addEventListener("input", () => data[id][2] = input.value);
+			div.appendChild(input);
 
 			document.body.appendChild(div);
 		};
 
+		const removeNode = () => {
+			const nodes = document.getElementsByClassName("node");
+			if (nodes.length === 0) {
+				return;
+			}
+			const last = nodes[nodes.length - 1];
+			delete data[last.id];
+			document.body.removeChild(last);
+		};
+
 		const ws = new WebSocket("ws://localhost:1338");
 		ws.onopen = () => setInterval(() => {
-			for (let node of document.getElementsByClassName("node")) {
-				const id = node.id;
-				const values = Array.from(document.querySelectorAll(`#${id} input`)).map(i => i.value);
-				ws.send(`${id} ${values.join(" ")}`);
+			for (let id of Object.keys(data)) {
+				ws.send(`${id} ${data[id].join(" ")}`);
 			}
 		}, 100);
+
+		addNode();
 	</script>
 </body>
 </html>
